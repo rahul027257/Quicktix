@@ -1,6 +1,62 @@
 # QuickTix
 
-Event ticket booking where customers pay the organizer **directly by UPI** and the organizer verifies each payment by hand.
+## About QuickTix
+
+QuickTix is a full-stack event ticket booking platform that connects event organizers with customers. Organizers can create and manage events, while customers can discover events, book tickets, and track their bookings through a single platform. It supports multiple user roles with dedicated permissions, secure authentication, and real-time ticket inventory management to prevent overbooking.
+
+The platform follows a direct UPI payment model, where customers pay organizers directly and submit payment proof for manual verification. Once the payment is approved, customers receive QR code-based tickets that organizers can scan for event entry.
+
+## Key Features
+
+- **Event Management:** Organizers can create, update, and manage events of different types, including college events, workshops, concerts, and more.
+- **Event Discovery:** Customers can browse available events and view details such as descriptions, dates, venues, ticket prices, and availability.
+- **User Authentication:** Secure registration and login with role-based access control.
+- **Ticket Booking:** Customers can select the number of tickets and book available seats.
+- **Inventory Management:** Temporary ticket reservations prevent multiple users from booking the same remaining tickets simultaneously.
+- **Direct UPI Payments:** Customers pay the organizer directly using their UPI ID or QR code. QuickTix does not process payments through a payment gateway.
+- **Manual Payment Verification:** Customers submit payment details or screenshots, which organizers manually verify before approving or rejecting bookings.
+- **QR Code Tickets:** Confirmed bookings generate unique tickets with QR codes for event entry.
+- **Event Check-in:** Organizers can scan ticket QR codes to validate tickets and prevent duplicate entry.
+- **Booking Management:** Customers can view their bookings and ticket details, while organizers can manage bookings and attendee lists.
+- **Booking Expiry:** Unconfirmed reservations are automatically released after the configured time limit.
+
+## User Roles
+
+QuickTix supports three main user roles, each with different permissions.
+
+### 1. Customer
+- Register and log in to the platform.
+- Browse and explore available events.
+- View event details and ticket availability.
+- Book tickets for events.
+- Pay organizers directly through UPI.
+- Submit payment details or screenshots for verification.
+- View booking status and access confirmed tickets with QR codes.
+
+### 2. Organizer
+- Apply for organizer access through the platform.
+- Create and manage events after approval.
+- Set event details, ticket prices, and available ticket quantities.
+- View bookings and attendee information.
+- Manually verify customer payments and approve or reject bookings.
+- Access attendee lists and scan QR code tickets during event entry.
+
+### 3. Admin
+- Manage users and platform activities.
+- Review and approve or reject organizer access requests.
+- Oversee events and maintain platform-level control.
+- Manage administrative operations to ensure the platform runs properly.
+
+## Payment Workflow
+
+QuickTix follows a direct UPI payment model:
+1. Customer selects an event and reserves tickets.
+2. Customer pays the organizer directly using the displayed UPI ID or QR code.
+3. Customer submits payment proof through QuickTix.
+4. Organizer manually verifies the payment.
+5. Once approved, the booking is confirmed and QR code tickets become available.
+
+**Note:** QuickTix does not act as a payment gateway or collect payments on behalf of organizers. Payment collection and verification are handled directly by the organizer.
 
 * **Backend:** Node 20+, TypeScript, Express 5, PostgreSQL, Drizzle ORM, hand-written SQL migrations
 * **Frontend:** Next.js 15 (App Router), React 19, Tailwind CSS 3, Lucide icons, `html5-qrcode` scanner
