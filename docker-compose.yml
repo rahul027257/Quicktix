@@ -1,0 +1,60 @@
+# One-command stack:  JWT_SECRET=$(openssl rand -hex 32) docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: quicktix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quicktix}
+      POSTGRES_DB: quicktix
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quicktix"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build: ./backend
+    command: ["node", "dist/db/migrate.js"]
+    environment: &api-env
+      NODE_ENV: production
+      DATABASE_URL: postgresql://quicktix:${POSTGRES_PASSWORD:-quicktix}@db:5432/quicktix
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET, e.g. JWT_SECRET=$(openssl rand -hex 32)}
+      ALLOWED_ORIGINS: ${PUBLIC_URL:-http://localhost:3000}
+      # Set to "true" once you serve the site over HTTPS (required for the camera scanner on real devices too).
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      UPLOAD_DIR: /app/uploads
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  api:
+    build: ./backend
+    environment: *api-env
+    volumes: [uploads:/app/uploads]
+    ports: ["4000:4000"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  # Dedicated expiry worker. Safe to run several copies: reservations are claimed with FOR UPDATE SKIP LOCKED.
+  worker:
+    build: ./backend
+    command: ["node", "dist/worker.js"]
+    environment: *api-env
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://api:4000
+    ports: ["3000:3000"]
+    depends_on: [api]
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:
